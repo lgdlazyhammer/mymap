@@ -1,0 +1,27 @@
+<ion-view view-title="注册">
+  <ion-content>
+    <form ng-submit="doRegister()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">用户名</span>
+          <input type="text" ng-model="registerData.username">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">密码</span>
+          <input type="password" ng-model="registerData.password">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">邮箱</span>
+          <input type="text" ng-model="registerData.email">
+        </label>
+        <ion-list>
+          <ion-radio ng-model="registerData.gender" ng-value="'male'">男</ion-radio>
+          <ion-radio ng-model="registerData.gender" ng-value="'female'">女</ion-radio>
+        </ion-list>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">注册</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>

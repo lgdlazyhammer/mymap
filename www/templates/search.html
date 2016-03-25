@@ -1,0 +1,32 @@
+<ion-view view-title="路线">
+    <div ng-show="form.display" class="bar bar-subheader">
+        <div class="list list-inset">
+            <label class="item item-input">
+            <input ng-model="form.start" type="text" placeholder="Starting Point">
+            </label>
+            <label class="item item-input">
+            <input ng-model="form.destination" type="text" placeholder="Destination">
+            </label>
+        </div>
+        
+        <button ng-click="searchBusRoute()" class="button button-block button-positive">
+        查找路线
+        </button>
+    </div>
+    
+    <ion-content>
+    <div id="baidumapcontainer">please resend you GPS request!</div>
+    </ion-content>
+    
+    <ion-tabs class="tabs-icon-top tabs-color-active-positive">
+        <ion-tab icon-off="ion-ios-location" icon-on="ion-ios-location-outline" ng-click="resendPositionRequest()">
+        </ion-tab>
+        
+        <ion-tab icon-off="ion-ios-paw" icon-on="ion-ios-paw-outline" ng-click="recordPosition()">
+        </ion-tab>
+        
+        <ion-tab icon-off="ion-android-bus" icon-on="ion-android-bus" ng-click="toggleSearchForm()">
+        </ion-tab>
+    </ion-tabs>
+</ion-view>
+ 

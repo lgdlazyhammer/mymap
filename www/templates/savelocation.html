@@ -1,0 +1,40 @@
+<ion-modal-view>
+    <ion-header-bar>
+        <h1 class="title">保存地点信息</h1>
+        <div class="buttons">
+            <button class="button button-clear" ng-click="closeSaveLocation()">Close</button>
+        </div>
+    </ion-header-bar>
+    
+    <div ng-controller="SaveLocationCtrl">
+        <ion-content>
+            <div>
+                <div class="list card">
+
+                    <div class="item item-avatar" ng-click="refreshLocationName()">
+                        <span ng-bind="current.currentLocationName"></span>
+                    </div>
+
+                    <div class="item item-body">
+                        <textarea style="width:100%;min-height:200px;" placeholder="Comment" ng-model="current.currentLocationComment"></textarea>
+                        <div class="assertive" ng-repeat="temp in displayURI">
+                            <div style="margin-top:1em;" class="item item-image">
+                                <img popuppicture ng-src="{{temp.picurl}}">
+                            </div>
+                        </div>
+                        <p>
+                            <span ng-click="selectPicture()" class="ion-ios-camera"></span>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </ion-content>
+
+        <ion-tabs class="tabs-icon-top tabs-color-active-positive">
+            <ion-tab title="Save" icon-off="ion-ios-folder" icon-on="ion-ios-folder-outline" ng-click="updatePositionDetail()">
+            </ion-tab>
+        </ion-tabs>
+    </div>
+    
+</ion-modal-view>

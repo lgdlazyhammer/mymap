@@ -1,0 +1,21 @@
+<ion-view view-title="记录地点列表">
+    <ion-content>
+        <div class="list card">
+
+            <div class="item item-avatar">
+                <h2><span ng-bind="currentLocation.info.name"></span></h2>
+            </div>   
+
+            <div class="item item-body">
+                <p>{{currentLocation.info.comment}}
+                </p>
+            </div>
+
+            <div class="assertive" ng-repeat="temp in currentLocation.picArr">
+                <div style="margin-top:1em;" class="item item-image">
+                    <img src="{{currentLocation.localDomain}}{{temp.picurl}}">
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,15 @@
+<ion-view view-title="地点详细信息">
+    <ion-content>
+        <ion-list>
+            <ion-item ng-repeat="location in location.list" href="#/app/playlists/{{location._id}}">
+            {{location.name}}
+            </ion-item>
+        </ion-list>
+    </ion-content>
+    <ion-tabs class="bar bar-footer">
+        <ion-tab title="Record" icon-off="ion-ios-list" icon-on="ion-ios-list-outline" ng-click="getLocationList()">
+        </ion-tab>
+        <ion-tab title="Verify" icon-off="ion-ios-lightbulb" icon-on="ion-ios-lightbulb-outline" ng-click="verifyAuthentication()">
+        </ion-tab>
+    </ion-tabs>
+</ion-view>
