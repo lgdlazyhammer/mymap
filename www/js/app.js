@@ -77,6 +77,16 @@ var mymap = angular.module('starter', ['ionic','ngCordova'])
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
   })
+  
+  .state('app.update', {
+    url: '/update',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/update.html',
+          controller: 'UpdatePictureCtrl'
+      }
+    }
+  })
 
   .state('app.search', {
     url: '/search',

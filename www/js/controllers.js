@@ -30,58 +30,19 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
       
-    var fileLocation = null;
-    var isIOS = ionic.Platform.isIOS();
-    var isAndroid = ionic.Platform.isAndroid();
-
-    if(isIOS){
-        fileLocation = cordova.file.documentsDirectory;
-    }
-
-    if(isAndroid){
-        fileLocation = cordova.file.externalDataDirectory;
-    }
-    $cordovaFile.checkFile(fileLocation, "mymap_token.txt")
-      .then(function (success) {
-        // success
-        $cordovaFile.writeFile(fileLocation, "mymap_token.txt", "test_token_content", true)
-          .then(function (success) {
-            // success
-            alert("save token : "+success);
-          }, function (error) {
-            // error
-            alert("write token fail!");
-          });
-
-      }, function (error) {
-        // error
-        $cordovaFile.createFile(fileLocation, "mymap_token.txt", true)
-          .then(function (success) {
-            // success
-            $cordovaFile.writeFile(fileLocation, "mymap_token.txt", temp_token, true)
-              .then(function (success) {
-                // success
-                alert("save token: "+success);
-              }, function (error) {
-                // error
-                alert("write token fail!");
-              });
-          }, function (error) {
-            // error
-            alert("create file fail!");
-          });
-      });
-      
       LoginService.setParams($scope.loginData.username,$scope.loginData.password);
       LoginService.getData().then(function (data) {
-				console.log(data);
+          
 				console.log(data.headers('connection'));
 				//save the session id
 				if(data.data.result == 'success'){
                     var temp_token = data.data.sessionId;
                     globalInfo.get("user").set({token:temp_token});
+                    globalInfo.get("user").set({name:data.data.name});
+                    globalInfo.get("user").set({personImgUrl:data.data.personImgUrl});
                     alert("login success token "+temp_token);
                     
+                    console.log(globalInfo.get("user"));
                     var fileLocation = null;
                     var isIOS = ionic.Platform.isIOS();
                     var isAndroid = ionic.Platform.isAndroid();
@@ -128,7 +89,9 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
                     alert("login failed error code "+data.status);
 				}
 				
-			},function(){});
+			},function(){
+          alert("login fialed, Please check your internet!");
+      });
 
     // Simulate a login delay. Remove this and replace with your login
     // code if using a login system
@@ -172,6 +135,8 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
         GetLocationListService.getData().then(function (data) {
                 $scope.location.list = data.data.result;
                 globalInfo.set({locationListJson:data.data.result});
+                var temp = [];
+                globalInfo.set({locationList:temp});
         },function(){});
     }
 })
@@ -207,6 +172,11 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
         });    
         transit.search($scope.form.start, $scope.form.destination);
         $scope.form.display = false;
+        
+        var transit = new BMap.TransitRoute(map, {
+            renderOptions: {map: map, panel: "r-result"}
+        });
+        transit.search($scope.form.start, $scope.form.destination);
     }
     
     $scope.resendPositionRequest = function(){
@@ -238,22 +208,20 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
             var marker = new SquareOverlay(point, 15, "green"); 
             map.addOverlay(marker);
             
-            var locationJsonList = globalInfo.get("locationListJson");
-            for(var i=0;i<locationJsonList.length;i++){
-                var tempLocation = locationJsonList[i];
-                var point = new BMap.Point(tempLocation.longtitude,tempLocation.latitude);
-                var marker = new BMap.Marker(point);
-                marker.addEventListener("click", function(){ 
-                    var opts = {    
-                     width : 250,       
-                     height: 100,
-                     title:'location'
+            var locationList = globalInfo.get("locationList");
+            for(var i=0;i<locationList.length;i++){
+                (function(i){
+                    var tempLocation = locationList[i];
+                    var point = new BMap.Point(tempLocation.longtitude,tempLocation.latitude);
+                    var marker = new BMap.Marker(point);
+                    function clickMarkerFunc(e){
+                        globalInfo.get("user").set({destination:tempLocation.name});
+                        alert(tempLocation.name+"has been set as local location.");
+                        marker.removeEventListener("click", clickMarkerFunc);
                     }
-                    var infoWindow = new BMap.InfoWindow(tempLocation.name+" has been set as destination.", opts);   
-                    globalInfo.get("user").set({destination:tempLocation.name});
-                    marker.openInfoWindow(infoWindow); 
-                });
-                map.addOverlay(marker);
+                    marker.addEventListener("click",clickMarkerFunc);
+                    map.addOverlay(marker);
+                })(i);
             }
         
             /*var marker = new BMap.Marker(point);            
@@ -304,12 +272,6 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     
     //define the record function
     $scope.recordPosition = function(){
-        /*function showInfo(e){ 
-            $rootScope.currentLng = e.point.lng;
-            $rootScope.currentLat = e.point.lat;
-            map.removeEventListener("click", showInfo);    
-        }    
-        map.addEventListener("click", showInfo);*/
         $scope.modal.show();
         var myGeo = new BMap.Geocoder();      
         // 根据坐标得到地址描述    
@@ -390,10 +352,14 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
      //define the record function
     $scope.updatePositionDetail = function(){
 
-        AddLocationService.setParams(globalInfo.get("user").get('locationName'), globalInfo.get("user").get('longtitude'), globalInfo.get("user").get('latitude'), $scope.current.currentLocationComment, "");
-        AddLocationService.getData().then(function (data) {
-            alert("Add Location "+data.data.result);
-        },function(){});
+        if(globalInfo.get("user").get('locationName') != null && globalInfo.get("user").get('locationName') != '' && globalInfo.get("user").get('locationName') != undefined){
+            AddLocationService.setParams(globalInfo.get("user").get('locationName'), globalInfo.get("user").get('longtitude'), globalInfo.get("user").get('latitude'), $scope.current.currentLocationComment, "");
+            AddLocationService.getData().then(function (data) {
+                alert("Add Location "+data.data.result);
+            },function(){});
+        }else{
+            alert("current location is not set!")
+        }
        // 创建地理编码实例      
         /*var myGeo = new BMap.Geocoder();      
         // 根据坐标得到地址描述    
@@ -413,7 +379,7 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
     
-    var tempDomain = "http://localhost:8100/";
+    var tempDomain = "http://120.25.102.53:8080/";
     
     console.log($stateParams.playlistId);
     
@@ -442,8 +408,105 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
         }
         locationArr = locationArr.substring(0, locationArr.length - 1);
         locationArr += ']';
-        
-        
+              
         return JSON.parse(locationArr);
     }
+})
+
+.controller('UpdatePersonPictureCtrl', function($scope, $cordovaFile) {
+    
+    $scope.personInfo = {imgUrl:null,name:null};
+    
+    var tempDomain = "http://120.25.102.53:8080/";
+    
+    $scope.init = function(){
+        
+        $scope.personInfo.imgUrl = tempDomain + globalInfo.get("user").get("personImgUrl");
+        $scope.personInfo.name = globalInfo.get("user").get("name");
+        //globalInfo.get("user").get("personImgUrl");
+        //globalInfo.get("user").get("name");
+        console.log($scope.personInfo.imgUrl);
+        console.log($scope.personInfo.name);
+        
+        var isIOS = ionic.Platform.isIOS();
+        var isAndroid = ionic.Platform.isAndroid();
+        var fileLocation = null;
+
+        if(isIOS){
+            fileLocation = cordova.file.documentsDirectory;
+        }
+
+        if(isAndroid){
+            fileLocation = cordova.file.externalDataDirectory;
+        }
+        // READ
+        $cordovaFile.readAsText(fileLocation, "mymap_token.txt")
+          .then(function (success) {
+            // success
+            alert("authentication success : "+success);
+            globalInfo.get("user").set({token:success});
+          }, function (error) {
+            alert("your authentication is not valid, please login.")
+          });
+        
+    };
+    
+})
+
+.controller('UpdatePictureCtrl', function($scope, constants, $cordovaCamera, $cordovaFileTransfer) {
+    
+    $scope.person = {imgUrl:null};
+    
+    $scope.selectPicture = function(){
+		
+		var options = {
+		    destinationType: Camera.DestinationType.FILE_URI,
+		    sourceType: Camera.PictureSourceType.CAMERA,
+		};
+
+		$cordovaCamera.getPicture(options).then(function(imageURI) {
+			//make display list
+			$scope.person.imgUrl = imageURI;
+			//display the made list
+			$ionicPopup.alert({
+				title: 'Selected Pictures',
+				content: $scope.person.imgUrl
+				}).then(function(res) {
+			});
+
+		}, function(err) {
+		});
+
+	}
+    
+    $scope.updatePersonPicture = function(){
+        
+        if(globalInfo.get("user").get("token") == null || globalInfo.get("user").get("token") == "" || globalInfo.get("user").get("token") == undefined){
+            alert("please login first!");
+        }else{
+            uploadPicture($scope.person.imgUrl);
+        }
+    }
+    
+    function uploadPicture(uploadFileURI){
+        
+		var options = {
+			fileKey: "file",
+			fileName: uploadFileURI.substring(uploadFileURI.lastIndexOf('/')+1),
+			chunkedMode: false,
+			mimeType: "image/"+uploadFileURI.substring(uploadFileURI.lastIndexOf('/')+1).substring(uploadFileURI.substring(uploadFileURI.lastIndexOf('/')+1).lastIndexOf('.')+1),
+			params: {
+				headers: { 'Authorization': globalInfo.get("user").get("token") }
+			}
+		};
+						
+		$cordovaFileTransfer.upload(constants.operationServices.uploadPersonPicture, uploadFileURI, options).then(function(result) {
+            alert("upload succeed : "+ result);
+		}, function(err) {
+            alert("upload failed : "+err);
+		}, function (progress) {
+			// constant progress updates
+		});
+	}
+    
 });

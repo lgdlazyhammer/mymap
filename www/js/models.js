@@ -7,7 +7,8 @@ var UserModel = Backbone.Model.extend({
         longtitude:'',
         latitude:'',
         locationName:'',
-        destination:''
+        destination:'',
+        personImgUrl:''
     }
 });
 

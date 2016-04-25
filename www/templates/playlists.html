@@ -1,10 +1,13 @@
 <ion-view view-title="地点详细信息">
     <ion-content>
-        <ion-list>
-            <ion-item ng-repeat="location in location.list" href="#/app/playlists/{{location._id}}">
-            {{location.name}}
-            </ion-item>
-        </ion-list>
+        <ion-scroll class="list">
+            <span class="item item-avatar" ng-repeat="location in location.list">
+                <input style="width:3em;height:3em;" type="checkbox"  value="{{location._id}}" selectlocation/>
+                <a style="text-decoration:none;color:black;" href="#/app/playlists/{{location._id}}">
+                {{location.name}}
+                </a>
+            </span>
+        </ion-scroll>
     </ion-content>
     <ion-tabs class="bar bar-footer">
         <ion-tab title="Record" icon-off="ion-ios-list" icon-on="ion-ios-list-outline" ng-click="getLocationList()">

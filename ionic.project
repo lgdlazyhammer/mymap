@@ -24,11 +24,11 @@
     },
     {
       "path": "/uploadpicture",
-      "proxyUrl": "http://localhost:8080/uploadpicture"
+      "proxyUrl": "http://120.25.102.53:8080/uploadpicture"
     },
     {
       "path": "/loginapi",
-      "proxyUrl": "http://localhost:8080/loginapi"
+      "proxyUrl": "http://120.25.102.53:8080/loginapi"
     },
     {
       "path": "/registerapi",
@@ -36,7 +36,7 @@
     },
     {
       "path": "/uploadpersonpictureapi",
-      "proxyUrl": "http://localhost:8080/uploadpersonpictureapi"
+      "proxyUrl": "http://120.25.102.53:8080/uploadpersonpictureapi"
     },
     {
       "path": "/addlocationapi",
@@ -48,15 +48,11 @@
     },
     {
       "path": "/getlocationlistapi",
-      "proxyUrl": "http://localhost:8080/getlocationlistapi"
+      "proxyUrl": "http://120.25.102.53:8080/getlocationlistapi"
     },
     {
       "path": "/getlocationlistsizeapi",
       "proxyUrl": "http://localhost:8080/getlocationlistsizeapi"
-    },
-    {
-      "path": "/getspecifylocationapi",
-      "proxyUrl": "http://localhost:8080/getspecifylocationapi"
     }
   ]
 }

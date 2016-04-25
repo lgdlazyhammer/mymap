@@ -10,8 +10,7 @@ mymap.constant('constants', {
 		addLocation:'http://120.25.102.53:8080/addlocationapi',
 		addLocationPicture:'http://120.25.102.53:8080/addlocationpictureapi',
         getLocationList:'http://120.25.102.53:8080/getlocationlistapi',
-        getLocationListSize:'http://120.25.102.53:8080/getlocationlistsizeapi',
-        getSpecifyLocation:'http://120.25.102.53:8080/getspecifylocationapi'
+        getLocationListSize:'http://120.25.102.53:8080/getlocationlistsizeapi'
     },
 	
 	notoperationServices:{
@@ -22,7 +21,6 @@ mymap.constant('constants', {
 		addLocation:'/addlocationapi',
 		addLocationPicture:'/addlocationpictureapi',
         getLocationList:'/getlocationlistapi',
-        getLocationListSize:'/getlocationlistsizeapi',
-        getSpecifyLocation:'/getspecifylocationapi'
+        getLocationListSize:'/getlocationlistsizeapi'
 	}
 });

@@ -1,0 +1,27 @@
+<ion-view view-title="更新头像">
+    
+    <div>
+        <ion-content>
+            <div>
+                <div class="list card">
+
+                    <div class="item item-body">
+                        <div style="margin-top:1em;" class="item item-image">
+                            <img ng-src="{{person.imgUrl}}">
+                        </div>
+                        <p>
+                            <span ng-click="selectPicture()" class="ion-ios-camera"></span>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </ion-content>
+
+        <ion-tabs class="tabs-icon-top tabs-color-active-positive">
+            <ion-tab title="Save" icon-off="ion-ios-folder" icon-on="ion-ios-folder-outline" ng-click="updatePersonPicture()">
+            </ion-tab>
+        </ion-tabs>
+    </div>
+    
+</ion-view>
