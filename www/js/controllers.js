@@ -81,7 +81,38 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
                               });
                           }, function (error) {
                             // error
-                            alert("create file fail!");
+                            alert("create token file fail!");
+                          });
+                      });
+                    
+                    $cordovaFile.checkFile(fileLocation, "mymap_picurl.txt")
+                      .then(function (success) {
+                        // success
+                        $cordovaFile.writeFile(fileLocation, "mymap_picurl.txt", globalInfo.get("user").get("personImgUrl") , true)
+                          .then(function (success) {
+                            // success
+                            alert("save image url : "+success);
+                          }, function (error) {
+                            // error
+                            alert("write image url fail!");
+                          });
+                        
+                      }, function (error) {
+                        // error
+                        $cordovaFile.createFile(fileLocation, "mymap_picurl.txt", true)
+                          .then(function (success) {
+                            // success
+                            $cordovaFile.writeFile(fileLocation, "mymap_picurl.txt", globalInfo.get("user").get("personImgUrl") , true)
+                              .then(function (success) {
+                                // success
+                                alert("save image url: "+success);
+                              }, function (error) {
+                                // error
+                                alert("save image fail!");
+                              });
+                          }, function (error) {
+                            // error
+                            alert("create image link file fail!");
                           });
                       });
 					
@@ -141,7 +172,7 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     }
 })
     
-.controller('SearchCtrl', function($scope,$cordovaGeolocation, $ionicModal, $timeout) {
+.controller('SearchCtrl', function($scope, $cordovaGeolocation, $ionicModal, $timeout) {
     
     var map = null;
     
@@ -299,10 +330,10 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     }
 })
 
-.controller('SaveLocationCtrl', function($scope, AddLocationService, $cordovaCamera, $ionicPopup) {
+.controller('SaveLocationCtrl', function($scope, AddLocationService) {
     
     $scope.current = {currentLocationName:null,currentLocationComment:null,picUrlContent:null};
-    $scope.displayURI = [];
+    
     
     /*var tempLocationName = globalInfo.get("user").get('locationName');
 
@@ -311,37 +342,6 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     }else{
         $scope.current.currentLocationName = "unset";
     }*/
-    $scope.selectPicture = function(){
-		
-		var options = {
-		    destinationType: Camera.DestinationType.FILE_URI,
-		    sourceType: Camera.PictureSourceType.CAMERA,
-		};
-
-		$cordovaCamera.getPicture(options).then(function(imageURI) {
-			//make display list
-			var tempURI= {};
-			tempURI['picurl'] = imageURI;
-			$scope.displayURI.push(tempURI);
-
-			var name = imageURI;
-			if (name != null && name != '') {
-				var i = name.lastIndexOf('/');
-				name = name.substring(i + 1);
-				if($scope.current.picUrlContent==null || $scope.current.picUrlContent==''){ $scope.current.picUrlContent += name; }else{ $scope.current.picUrlContent += ','+name;}
-			}
-			
-			//display the made list
-			$ionicPopup.alert({
-				title: 'Selected Pictures',
-				content: $scope.current.picUrlContent
-				}).then(function(res) {
-			});
-
-		}, function(err) {
-		});
-
-	}
     
     $scope.current.currentLocationComment = null;
     
@@ -377,9 +377,72 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('PlaylistCtrl', function($scope, $stateParams, $cordovaCamera, $ionicPopup, $cordovaFileTransfer) {
     
     var tempDomain = "http://120.25.102.53:8080/";
+    $scope.displayURI = [];
+    $scope.current = { picUrlContent:"" };
+    
+    $scope.selectPicture = function(){
+		
+		var options = {
+		    destinationType: Camera.DestinationType.FILE_URI,
+		    sourceType: Camera.PictureSourceType.CAMERA,
+		};
+
+		$cordovaCamera.getPicture(options).then(function(imageURI) {
+			//make display list
+			var tempURI= {};
+			tempURI['picurl'] = imageURI;
+			$scope.displayURI.push(tempURI);
+
+			var name = imageURI;
+			if (name != null && name != '') {
+				var i = name.lastIndexOf('/');
+				name = name.substring(i + 1);
+				if($scope.current.picUrlContent==null || $scope.current.picUrlContent==''){ $scope.current.picUrlContent += name; }else{ $scope.current.picUrlContent += ','+name;}
+			}
+			
+			//display the made list
+			$ionicPopup.alert({
+				title: 'Selected Pictures',
+				content: $scope.current.picUrlContent
+				}).then(function(res) {
+			});
+
+		}, function(err) {
+		});
+
+	};
+    
+    function uploadPicture(uploadFileURI){
+        
+		var options = {
+			fileKey: "file",
+			fileName: uploadFileURI.substring(uploadFileURI.lastIndexOf('/')+1),
+			chunkedMode: false,
+			mimeType: "image/"+uploadFileURI.substring(uploadFileURI.lastIndexOf('/')+1).substring(uploadFileURI.substring(uploadFileURI.lastIndexOf('/')+1).lastIndexOf('.')+1),
+			params: {
+				headers: { 'Authorization': globalInfo.get("user").get("token"), 'locationid':$stateParams.playlistId }
+			}
+		};
+						
+		$cordovaFileTransfer.upload(constants.operationServices.addlocationpictureapi, uploadFileURI, options).then(function(result) {
+            alert("upload succeed : "+ result);
+		}, function(err) {
+            alert("upload failed : "+err);
+		}, function (progress) {
+			// constant progress updates
+		});
+	}
+    
+    $scope.updatePicture = function(){
+        
+        for(var i=0;i<$scope.displayURI.length;i++){
+            uploadPicture($scope.displayURI[i].picurl);
+        }
+        
+    };
     
     console.log($stateParams.playlistId);
     
@@ -447,6 +510,16 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
             globalInfo.get("user").set({token:success});
           }, function (error) {
             alert("your authentication is not valid, please login.")
+          });
+        
+        // READ
+        $cordovaFile.readAsText(fileLocation, "mymap_picurl.txt")
+          .then(function (success) {
+            // success
+            alert("picture url : "+success);
+            $scope.personInfo.imgUrl = tempDomain + success;
+          }, function (error) {
+            alert("can not get your picture." + error);
           });
         
     };

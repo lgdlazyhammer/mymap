@@ -9,6 +9,14 @@
             <div class="item item-body">
                 <p>{{currentLocation.info.comment}}
                 </p>
+                <div class="assertive" ng-repeat="temp in displayURI">
+                    <div style="margin-top:1em;" class="item item-image">
+                        <img popuppicture ng-src="{{temp.picurl}}">
+                    </div>
+                </div>
+                <p>
+                    <span ng-click="selectPicture()" class="ion-ios-camera"></span>
+                </p>
             </div>
 
             <div class="assertive" ng-repeat="temp in currentLocation.picArr">
@@ -18,4 +26,9 @@
             </div>
         </div>
     </ion-content>
+    
+    <ion-tabs class="tabs-icon-top tabs-color-active-positive">
+        <ion-tab title="Save" icon-off="ion-ios-folder" icon-on="ion-ios-folder-outline" ng-click="updatePicture()">
+        </ion-tab>
+    </ion-tabs>
 </ion-view>

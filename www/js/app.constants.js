@@ -2,7 +2,7 @@
 
 mymap.constant('constants', {
 	
-    operationServices: {
+    notoperationServices: {
         uploadPicture:'http://120.25.102.53:8080/uploadpicture',
 		login:'http://120.25.102.53:8080/loginapi',
 		register:'http://120.25.102.53:8080/registerapi',
@@ -13,7 +13,7 @@ mymap.constant('constants', {
         getLocationListSize:'http://120.25.102.53:8080/getlocationlistsizeapi'
     },
 	
-	notoperationServices:{
+	operationServices:{
 		uploadPicture:'/uploadpicture',
 		login:'/loginapi',
 		register:'/registerapi',
