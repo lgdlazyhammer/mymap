@@ -377,7 +377,7 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams, $cordovaCamera, $ionicPopup, $cordovaFileTransfer) {
+.controller('PlaylistCtrl', function($scope, $stateParams, $cordovaCamera, $ionicPopup, $cordovaFileTransfer, constants) {
     
     var tempDomain = "http://120.25.102.53:8080/";
     $scope.displayURI = [];
@@ -427,7 +427,7 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
 			}
 		};
 						
-		$cordovaFileTransfer.upload(constants.operationServices.addlocationpictureapi, uploadFileURI, options).then(function(result) {
+		$cordovaFileTransfer.upload(constants.operationServices.addLocationPicture, uploadFileURI, options).then(function(result) {
             alert("upload succeed : "+ result);
 		}, function(err) {
             alert("upload failed : "+err);
@@ -439,7 +439,10 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     $scope.updatePicture = function(){
         
         for(var i=0;i<$scope.displayURI.length;i++){
-            uploadPicture($scope.displayURI[i].picurl);
+            (function(i){
+                alert($scope.displayURI[i].picurl);
+                uploadPicture($scope.displayURI[i].picurl);
+            })(i);
         }
         
     };
@@ -452,10 +455,12 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     $scope.currentLocation.localDomain = tempDomain;
     var locationJsonList = globalInfo.get("locationListJson");
     
+    
     for(var i=0;i<locationJsonList.length;i++){
         if($stateParams.playlistId == locationJsonList[i]._id){
             $scope.currentLocation.info = locationJsonList[i];
-            $scope.currentLocation.picArr = parseArrayToJson($scope.currentLocation.info.picurl.split(","));            
+            $scope.currentLocation.picArr = parseArrayToJson($scope.currentLocation.info.picurl.split(","));   
+            console.log(JSON.stringify($scope.currentLocation.info.picurl.split(",")));
         }
     }
     
@@ -463,16 +468,25 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
         
     function parseArrayToJson(arr){
         
-        var locationArr = '[';
+        //var locationArr = '[';
+        var locArr = [];
+        
         for(var i=0;i<arr.length;i++){
-            var temp = '{"picurl":"'+arr[i]+'"},';
-            locationArr += temp;
+            //var temp = '{"picurl":"'+arr[i]+'"},';
+            //locationArr += temp;
+            (function(i){
+                var temp = { picurl: ''};
+                temp.picurl = arr[i];
+                locArr.push(temp);
+                console.log(JSON.stringify(locArr));
+            })(i);
             //locationArr.push(JSON.parse(temp));
         }
-        locationArr = locationArr.substring(0, locationArr.length - 1);
-        locationArr += ']';
+        //locationArr = locationArr.substring(0, locationArr.length - 1);
+        //locationArr += ']';
               
-        return JSON.parse(locationArr);
+        //return JSON.parse(locationArr);
+        return locArr;
     }
 })
 
