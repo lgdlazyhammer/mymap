@@ -86,4 +86,14 @@ mymap.directive('popuppicture', function ($ionicModal) {
         link: function (scope, element, attrs) {
         }
     };
-});
+})
+
+.directive('initialisation',['$rootScope',function($rootScope) {
+    return {
+        priority: -1000,// a low number so this directive loads after all other directives have loaded.
+        restrict: 'A',
+        link: function($scope) {
+            $rootScope.$broadcast('initialize-app');
+        }
+    };
+}]);

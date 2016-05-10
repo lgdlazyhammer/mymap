@@ -137,7 +137,7 @@ mymap.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, 
     
     $scope.location = {list:null};
     
-    $timeout(function(){$rootScope.$broadcast('initialize-app'); }, 1000);
+    //$timeout(function(){$rootScope.$broadcast('initialize-app'); }, 1000);
     
     $scope.$on('initialize-app', function(event, args) {
         verifyAuthentication();
