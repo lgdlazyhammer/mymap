@@ -19,7 +19,10 @@ var mymap = angular.module('starter', ['ionic','ngCordova'])
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+      
   });
+    
+      $rootScope.$broadcast('initialize-app');
     
     //主页面显示退出提示框
     $ionicPlatform.registerBackButtonAction(function (e) {

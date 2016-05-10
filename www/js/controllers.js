@@ -133,11 +133,18 @@ mymap.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, 
   };
 })
 
-.controller('PlaylistsCtrl', function($rootScope, $scope, GetLocationListService, $cordovaFile) {
+.controller('PlaylistsCtrl', function($rootScope, $scope, GetLocationListService, $cordovaFile, $timeout) {
     
     $scope.location = {list:null};
     
-    $scope.verifyAuthentication = function(){
+    $timeout(function(){$rootScope.$broadcast('initialize-app'); }, 1000);
+    
+    $scope.$on('initialize-app', function(event, args) {
+        verifyAuthentication();
+        console.log("initializing app");
+    });
+    
+    function verifyAuthentication(){
         
         var isIOS = ionic.Platform.isIOS();
         var isAndroid = ionic.Platform.isAndroid();
