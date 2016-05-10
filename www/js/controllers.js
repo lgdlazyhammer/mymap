@@ -1,4 +1,4 @@
-mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService, $cordovaFile) {
+mymap.controller('AppCtrl', function($rootScope, $scope, $ionicModal, $timeout, LoginService, $cordovaFile) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -40,6 +40,7 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
                     globalInfo.get("user").set({token:temp_token});
                     globalInfo.get("user").set({name:data.data.name});
                     globalInfo.get("user").set({personImgUrl:data.data.personImgUrl});
+                    $rootScope.$broadcast('user-logged-in');
                     alert("login success token "+temp_token);
                     
                     console.log(globalInfo.get("user"));
@@ -132,7 +133,7 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
   };
 })
 
-.controller('PlaylistsCtrl', function($scope,GetLocationListService,$cordovaFile) {
+.controller('PlaylistsCtrl', function($rootScope, $scope, GetLocationListService, $cordovaFile) {
     
     $scope.location = {list:null};
     
@@ -157,6 +158,17 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
             globalInfo.get("user").set({token:success});
           }, function (error) {
             alert("your authentication is not valid, please login.")
+          });
+        
+        // READ
+        $cordovaFile.readAsText(fileLocation, "mymap_picurl.txt")
+          .then(function (success) {
+            // success
+            alert("load picture success : "+success);
+            globalInfo.get("user").set({personImgUrl:success});
+            $rootScope.$broadcast('user-picurl-loaded');
+          }, function (error) {
+            alert("your picture url is not valid, please login.")
           });
     }
       
@@ -496,7 +508,15 @@ mymap.controller('AppCtrl', function($scope, $ionicModal, $timeout, LoginService
     
     var tempDomain = "http://120.25.102.53:8080/";
     
-    $scope.init = function(){
+    $scope.$on('user-logged-in', function(event, args) {
+        init();
+    });
+    
+    $scope.$on('user-picurl-loaded', function(event, args) {
+        init();
+    });
+    
+    function init(){
         
         $scope.personInfo.imgUrl = tempDomain + globalInfo.get("user").get("personImgUrl");
         $scope.personInfo.name = globalInfo.get("user").get("name");
